@@ -1,0 +1,157 @@
+/* =========================================================
+   home.css — the full-screen slide experience from the video.
+   Each slide moves the 3D camera to a new spot in the gym.
+   ========================================================= */
+
+.home { position: relative; height: 100vh; height: 100svh; overflow: hidden; }
+.slides { position: absolute; inset: 0; }
+.slide {
+  position: absolute; inset: 0;
+  display: flex; align-items: center;
+  padding: calc(var(--header-h) + 20px) clamp(20px, 6vw, 96px) 110px;
+  pointer-events: none; visibility: hidden;
+}
+.slide.active { pointer-events: auto; visibility: visible; }
+.slide.center { justify-content: center; text-align: center; }
+
+/* staggered entrance of slide content */
+.s-anim { opacity: 0; transform: translateY(26px); transition: opacity 0.8s var(--ease), transform 0.9s var(--ease); }
+.slide.active .s-anim { opacity: 1; transform: none; transition-delay: calc(0.25s + var(--d, 0) * 0.1s); }
+.slide.leaving .s-anim { opacity: 0; transform: translateY(-18px); transition-delay: 0s; transition-duration: 0.4s; }
+
+.hero-title { font-size: clamp(3rem, 8.4vw, 7.4rem); }
+[dir="rtl"] .hero-title { font-size: clamp(2.6rem, 7vw, 6rem); }
+.hero-title .accent-word { color: var(--accent-text); -webkit-text-fill-color: var(--accent-text); }
+.hero-lead { max-width: 46ch; color: var(--text); opacity: 0.86; font-size: clamp(1rem, 1.3vw, 1.15rem); margin-top: 20px; }
+.hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 30px; }
+.slide.center .hero-actions { justify-content: center; }
+.slide.center .hero-lead { margin-inline: auto; }
+
+/* side label like "APEX ONE" in the video */
+.hero-side {
+  position: absolute; inset-inline-end: calc(clamp(20px, 6vw, 96px) + 40px); top: 46%;
+  font-family: "Anton", var(--font-display); font-size: clamp(1.4rem, 3vw, 2.6rem); text-transform: uppercase;
+  letter-spacing: 0.04em; opacity: 0.9;
+}
+.hero-side small { display: block; font-family: var(--font-body); font-size: 0.7rem; letter-spacing: 0.3em; color: var(--text-2); }
+[dir="rtl"] .hero-side { font-family: var(--font-display); letter-spacing: 0; }
+[dir="rtl"] .hero-side small { letter-spacing: 0; font-size: 0.85rem; }
+
+/* Mini stats row on the first slide */
+.hero-stats { display: flex; gap: 26px; margin-top: 38px; flex-wrap: wrap; }
+.hero-stats div b { display: block; font-family: "Anton", var(--font-display); font-size: 1.9rem; line-height: 1; }
+.hero-stats div span { font-size: 0.75rem; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.14em; }
+[dir="rtl"] .hero-stats div span { letter-spacing: 0; font-size: 0.85rem; }
+
+/* Neon slide */
+.neon-quote { max-width: 620px; }
+.quote-title { font-size: clamp(2rem, 4.4vw, 3.8rem); line-height: 1.02; }
+[dir="rtl"] .quote-title { font-size: clamp(1.7rem, 3.4vw, 2.9rem); line-height: 1.4; }
+.neon-quote .q { font-size: clamp(1.1rem, 1.8vw, 1.45rem); line-height: 1.5; margin-top: 22px; opacity: 0.92; }
+.neon-title {
+  font-size: clamp(2.6rem, 7vw, 6.2rem);
+  color: #fff;
+  text-shadow: 0 0 6px #fff, 0 0 18px var(--accent), 0 0 44px var(--accent-2), 0 0 90px var(--accent-2);
+  animation: neonFlicker 6s infinite;
+}
+[data-theme="light"] .neon-title { color: #1b1b1b; text-shadow: 0 0 22px var(--accent); }
+@keyframes neonFlicker { 0%, 92%, 100% { opacity: 1; } 93% { opacity: 0.55; } 94% { opacity: 1; } 96% { opacity: 0.7; } 97% { opacity: 1; } }
+
+/* "Performance Zone" glass panel */
+.zone-card { width: min(480px, 100%); padding: 30px; }
+.zone-card h2 { font-size: clamp(2.2rem, 4vw, 3.2rem); margin-bottom: 14px; }
+.zone-steps { display: grid; gap: 12px; margin: 18px 0 24px; }
+.zone-steps li { display: grid; grid-template-columns: 36px 1fr; gap: 12px; align-items: start; }
+.zone-steps .n { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--line-strong); font-weight: 800; font-size: 0.8rem; color: var(--accent-text); }
+.zone-steps b { display: block; font-size: 0.95rem; }
+.zone-steps span { font-size: 0.82rem; color: var(--text-2); }
+
+/* Scanning line animation shown on the zone card */
+.scan-frame { position: relative; overflow: hidden; }
+.scan-frame::after {
+  content: ""; position: absolute; inset-inline: 0; top: -30%; height: 30%;
+  background: linear-gradient(180deg, transparent, var(--accent-glow), transparent);
+  animation: scan 3.2s var(--ease) infinite; pointer-events: none;
+}
+@keyframes scan { to { top: 110%; } }
+
+/* Programs (Core / Pro / Elite floating glass cards) */
+.programs { display: flex; gap: 20px; align-items: center; justify-content: center; perspective: 1200px; flex-wrap: wrap; }
+.program {
+  width: 250px; padding: 22px; text-align: start;
+  transform: rotateY(var(--ry, 0deg)) translateY(var(--ty, 0));
+  transition: transform 0.6s var(--ease), border-color var(--t-fast);
+}
+.program:hover { transform: rotateY(0) translateY(-8px); border-color: var(--accent); }
+.program:nth-child(1) { --ry: 14deg; --ty: 16px; }
+.program:nth-child(2) { --ry: 0deg; --ty: -10px; width: 270px; }
+.program:nth-child(3) { --ry: -14deg; --ty: 16px; }
+[dir="rtl"] .program:nth-child(1) { --ry: -14deg; }
+[dir="rtl"] .program:nth-child(3) { --ry: 14deg; }
+.program h3 { font-size: 2.2rem; }
+.program .fig { height: 130px; margin: 6px 0 10px; }
+.program ul { display: grid; gap: 6px; margin: 10px 0 16px; font-size: 0.82rem; color: var(--text-2); }
+.program li { display: flex; gap: 8px; align-items: center; }
+.program li .icon { color: var(--accent-text); width: 15px; height: 15px; }
+.program.featured { border-color: rgba(233, 210, 156, 0.45); }
+.program .tagline { font-size: 0.78rem; color: var(--text-2); }
+
+/* Dashboard slide */
+.dash { display: grid; grid-template-columns: auto 1fr; gap: 34px; align-items: center; width: min(1080px, 100%); margin-inline: auto; }
+.dash-tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.dash .goal-card { padding: 26px; display: grid; place-items: center; gap: 12px; text-align: center; }
+.dash .ring-label b { font-family: "Anton", var(--font-display); font-size: 2.4rem; display: block; }
+.dash .ring-label span { font-size: 0.75rem; color: var(--text-2); }
+
+/* Thumbnail strip (recommended exercises, bottom of the last slide) */
+.thumb-strip {
+  position: absolute; inset-inline: clamp(20px, 6vw, 96px); bottom: 64px;
+  display: grid; grid-auto-flow: column; grid-auto-columns: minmax(200px, 1fr); gap: 14px;
+  overflow-x: auto; padding-bottom: 6px; scroll-snap-type: x mandatory;
+}
+.thumb {
+  scroll-snap-align: start; display: flex; gap: 12px; align-items: center; padding: 12px; text-align: start;
+  transition: transform var(--t) var(--ease), border-color var(--t-fast);
+}
+.thumb:hover { transform: translateY(-4px); border-color: var(--accent); }
+.thumb .fig { width: 64px; height: 64px; flex: none; border-radius: 12px; background: rgba(0,0,0,0.3); }
+.thumb b { display: block; font-size: 0.9rem; line-height: 1.25; }
+.thumb span { font-size: 0.75rem; color: var(--text-2); }
+
+/* Pagination dots + arrows */
+.dots { position: absolute; bottom: 26px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 5; }
+.dots button { width: 8px; height: 8px; border-radius: var(--pill); background: rgba(255, 255, 255, 0.35); transition: width var(--t) var(--ease), background var(--t-fast); }
+[data-theme="light"] .dots button { background: rgba(0, 0, 0, 0.25); }
+.dots button[aria-current="true"] { width: 28px; background: var(--accent); }
+.arrow {
+  position: absolute; top: 50%; transform: translateY(-50%); z-index: 5;
+  width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center;
+  border: 1px solid var(--line-strong); background: rgba(0, 0, 0, 0.25); backdrop-filter: blur(8px);
+  transition: background var(--t-fast), transform var(--t) var(--ease), opacity var(--t);
+}
+.arrow:hover { background: rgba(0, 0, 0, 0.45); transform: translateY(-50%) scale(1.06); }
+.arrow.prev { inset-inline-start: 18px; }
+.arrow.next { inset-inline-end: 18px; }
+.arrow:disabled { opacity: 0; pointer-events: none; }
+.slide-count { position: absolute; bottom: 22px; inset-inline-start: clamp(20px, 6vw, 96px); font-size: 0.78rem; color: var(--text-2); letter-spacing: 0.2em; z-index: 5; }
+.slide-count b { color: var(--text); }
+.scroll-hint { position: absolute; bottom: 22px; inset-inline-end: 90px; font-size: 0.72rem; color: var(--text-2); letter-spacing: 0.2em; text-transform: uppercase; z-index: 5; display: flex; align-items: center; gap: 8px; }
+[dir="rtl"] .scroll-hint, [dir="rtl"] .slide-count { letter-spacing: 0; }
+.scroll-hint i { width: 18px; height: 28px; border: 1.5px solid var(--text-2); border-radius: 10px; position: relative; }
+.scroll-hint i::after { content: ""; position: absolute; left: 50%; top: 5px; width: 3px; height: 6px; background: var(--text-2); border-radius: 2px; transform: translateX(-50%); animation: wheel 1.6s infinite; }
+@keyframes wheel { to { transform: translate(-50%, 9px); opacity: 0; } }
+
+@media (max-width: 900px) {
+  .dash { grid-template-columns: 1fr; gap: 16px; }
+  .hero-side { display: none; }
+  .scroll-hint { display: none; }
+  .programs { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; padding: 20px 4px; scroll-snap-type: x mandatory; width: 100%; }
+  .program { flex: none; scroll-snap-align: center; --ry: 0deg !important; --ty: 0 !important; }
+  .slide { align-items: flex-start; overflow-y: auto; padding-top: calc(var(--header-h) + 24px); }
+  .thumb-strip { bottom: 58px; }
+  .arrow { display: none; }
+}
+@media (max-height: 700px) and (min-width: 901px) {
+  .program .fig { height: 80px; }
+  .program ul { display: none; }
+}

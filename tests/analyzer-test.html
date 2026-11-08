@@ -1,0 +1,46 @@
+<!DOCTYPE html><html><body><pre id="o"></pre><script type="module">
+import { DEMOS, blend } from '../js/components/demo.js';
+import { createEngine, ANALYZERS } from '../js/ai/analyzers.js';
+import { EXERCISES } from '../js/data/exercises.js';
+// Build 33 MediaPipe-style landmarks from demo joints (y up → image y down)
+function toLm(j, view, mistake=false) {
+  const P = []; for (let i=0;i<33;i++) P.push({x:0,y:0,visibility:0.95});
+  const S = 1/320, ox = 0.5, oy = 0.82;
+  const m = (p) => ({ x: ox + p[0]*S, y: oy - p[1]*S, visibility: 0.95 });
+  const set = (i,p)=>P[i]=m(p);
+  const L = j.near, R = j.far;
+  set(0, j.core.head); set(7, [j.core.head[0]-3, j.core.head[1]]); set(8, [j.core.head[0]+3, j.core.head[1]]);
+  const map = (s, sh, el, wr, hip, kn, an, he, ft) => { set(sh,s.shoulder); set(el,s.elbow); set(wr,s.wrist); set(hip,s.hip); set(kn,s.knee); set(an,s.ankle);
+    set(ft, s.toe); set(he, [s.ankle[0] - (s.toe[0]-s.ankle[0])*0.35, s.ankle[1] - 3]); };
+  map(L, 11,13,15,23,25,27,29,31); map(R, 12,14,16,24,26,28,30,32);
+  return P;
+}
+const out=[]; const fps=30;
+for (const e of EXERCISES) {
+  const d = DEMOS[e.demo]; const cfg = ANALYZERS[e.ai];
+  const eng = createEngine(e.ai);
+  const seq=[...d.frames, d.frames[0]];
+  let t=1000; const segMs = 1300;
+  const reps = 3;
+  for (let r=0;r<reps;r++) for (let s=0;s<seq.length-1;s++) {
+    for (let f=0; f<=segMs/1000*fps; f++) { const k=f/(segMs/1000*fps); const kk=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+      const res = eng.update(toLm(blend(d, seq[s], seq[s+1], kk), d.view), t, 1); t+=1000/fps;
+      if (f===Math.round(segMs/1000*fps/2) && r===0 && s===0) out._first = res; }
+    // hold at keyframe
+    for (let f=0; f<12; f++) { eng.update(toLm(blend(d, seq[s+1], seq[s+1], 0), d.view), t, 1); t+=1000/fps; }
+  }
+  const last = eng.update(toLm(blend(d, d.frames[0], d.frames[0], 0), d.view), t, 1);
+  const expected = cfg.mode==='alternate' ? (d.frames.length===2 ? reps*2 : reps*2) : cfg.mode==='hold' ? 'hold' : reps;
+  const got = cfg.mode==='hold' ? `${eng.holdSec.toFixed(1)}s` : eng.reps;
+  out.push(`${(e.id).padEnd(28)} ${cfg.mode.padEnd(9)} expected ${String(expected).padEnd(4)} got ${String(got).padEnd(6)} score ${eng.score()} last:${last.status}/${last.msg||''}`);
+}
+
+out.push('--- mistakes ---');
+for (const e of EXERCISES) {
+  const d = DEMOS[e.demo]; const eng = createEngine(e.ai); let t=1000; const msgs = new Set();
+  for (let r=0;r<3;r++) for (const [a,b] of [[d.frames[0], d.mistake],[d.mistake, d.frames[0]]]) for (let f=0; f<=40; f++) {
+    const res = eng.update(toLm(blend(d, a, b, f/40), d.view), t, 1); t+=33; if (res.msg) msgs.add(res.msg); if (res.repMsg) msgs.add('rep:'+res.repMsg); }
+  out.push(`${e.id.padEnd(28)} ${[...msgs].join(', ')}`);
+}
+document.getElementById('o').textContent = out.join('\n'); window.done=true;
+</script></body></html>

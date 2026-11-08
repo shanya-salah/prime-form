@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-theme="dark" data-accent="gold">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRIME FORM — AI Personal Trainer</title>
+  <meta name="description" content="AI-powered smart gym and personal fitness trainer with real-time posture feedback." />
+  <meta name="theme-color" content="#0B0D0F" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+
+  <!-- Fonts: Anton (headlines, like the video), Inter (English text),
+       Noto Kufi / Noto Sans Arabic (Arabic + Kurdish Sorani). -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&family=Noto+Kufi+Arabic:wght@600;700;800;900&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap" />
+
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/home.css" />
+  <link rel="stylesheet" href="css/pages.css" />
+  <link rel="stylesheet" href="css/workout.css" />
+</head>
+<body>
+  <!-- 3D gym background (drawn by js/scene/gym3d.js) -->
+  <div id="scene-layer" aria-hidden="true">
+    <canvas id="gym-canvas"></canvas>
+    <div id="scene-photo"></div>
+    <div class="scene-shade"></div>
+  </div>
+
+  <a class="skip-link" href="#app">Skip to content</a>
+  <header id="site-header"></header>
+  <div id="drawer-root"></div>
+
+  <main id="app" tabindex="-1"></main>
+
+  <div id="music-dock"></div>
+  <div id="quick-root"></div>
+  <div id="toast-root" aria-live="polite"></div>
+  <div id="modal-root"></div>
+
+  <noscript>
+    <p style="padding:2rem;color:#fff">Please enable JavaScript to use PRIME FORM.</p>
+  </noscript>
+
+  <!-- Everything starts here. type="module" lets us use import/export. -->
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
